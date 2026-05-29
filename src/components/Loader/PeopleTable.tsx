@@ -2,15 +2,13 @@ import { Person } from '../../types';
 import { getPeople } from '../../api';
 import React from 'react';
 import { Loader } from './Loader';
-import { Link, useParams } from 'react-router-dom';
+import { PersonLink } from './Person.link';
 
 export const PeopleTable = () => {
   const [peopleLoading, setPeopleLoading] = React.useState(false);
   const [peopleError, setPeopleError] = React.useState(false);
   const [people, setPeople] = React.useState<Person[]>([]);
   const [empty, setEmpty] = React.useState(false);
-  const { slug } = useParams();
-  const selectedSlug = slug || '';
 
   React.useEffect(() => {
     const fetchPeople = async () => {
@@ -61,52 +59,7 @@ export const PeopleTable = () => {
 
           <tbody>
             {people.map(person => (
-              <tr
-                key={person.slug}
-                data-cy="person"
-                className={
-                  person.slug === selectedSlug ? 'has-background-warning' : ''
-                }
-              >
-                <td>
-                  {person.slug === selectedSlug ? (
-                    <Link to={`..`}>{person.name}</Link>
-                  ) : (
-                    <Link
-                      to={`../${person.slug}`}
-                      className={person.sex === 'f' ? 'has-text-danger' : ''}
-                    >
-                      {person.name}
-                    </Link>
-                  )}
-                </td>
-                <td>{person.sex}</td>
-                <td>{person.born}</td>
-                <td>{person.died}</td>
-                <td>
-                  {people.find(p => p.name === person.motherName) ? (
-                    <Link
-                      to={`../${people.find(p => p.name === person.motherName)?.slug}`}
-                      className="has-text-danger"
-                    >
-                      {person.motherName}
-                    </Link>
-                  ) : (
-                    person.mother?.name || person.motherName || '-'
-                  )}
-                </td>
-                <td>
-                  {people.find(p => p.name === person.fatherName) ? (
-                    <Link
-                      to={`../${people.find(p => p.name === person.fatherName)?.slug}`}
-                    >
-                      {person.fatherName}
-                    </Link>
-                  ) : (
-                    person.father?.name || person.fatherName || '-'
-                  )}
-                </td>
-              </tr>
+              <PersonLink key={person.slug} person={person} people={people} />
             ))}
           </tbody>
         </table>
